@@ -1,0 +1,10 @@
+pipeline{
+    agent any
+    stages{
+        stage("apache tomcat inatallation"){
+            steps{
+                sh 'ansible-playbook -i inventory.yaml apache_tomcat_installation_playbook.yaml'
+            }
+        }
+    }
+}

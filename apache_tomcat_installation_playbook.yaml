@@ -1,0 +1,99 @@
+---
+- name: install jkd11
+
+  hosts: all
+  become: True
+  vars:
+   tomcat_version: 9.0.68
+   amazon_linux_java_version: java-openjdk11
+   yum_java_package_name: java-11-openjdk
+   tomcat_user: tomcat
+   tomcat_group: tomcat
+   apache_tomcat_download_url: https://dlcdn.apache.org/tomcat/tomcat-9
+   tomcat_home_path: /usr/share/
+   tomcat_service_file: tomcat.service
+   tomcat_service_path: /etc/systemd/system/
+  tasks:
+  - name: update latest software in the server
+    ansible.builtin.yum:
+      name: "*"
+      state: latest
+    when: (ansible_facts['distribution']=="amazon")
+  - name: update latest software in the ubuntu server
+    ansible.builtin.apt:
+      name: "*"
+      state: latest
+      update_cache: yes
+    when: (ansible_facts['distribution']=="ubuntu")
+  - name: pause playbook
+    ansible.builtin.pause:
+       prompt: "check the file_list"
+  - name: enable open jdk in amazon linux
+    ansible.builtin.command: amazon-linux-extras enable "{{ amazon_linux_java_version }}" 
+  - name:  install the openjdk11
+    ansible.builtin.yum:
+      name:
+        - "{{ yum_java_package_name }}"
+        - wget
+      state: latest
+  - name: create tomcat group
+    ansible.builtin.group:
+      name: "{{ tomcat_group }}"
+      state: present
+      system: yes
+  - name: create tomcat user
+    ansible.builtin.user:
+      name: "{{ tomcat_user }}"
+      group: "{{ tomcat_group }}"
+      system: yes
+      shell: /bin/bash
+  - name: check if tomcat binary file if exists
+    ansible.builtin.stat:
+       path: "/home/ec2-user/apache-tomcat-{{ tomcat_version }}.tar.gz"
+    register: file_status
+  - name: list multiple file_status
+    ansible.builtin.find:
+       path: /home/ec2-user/
+       patterns: 'apache-tomcat-*.tar.gz*'
+    register: file_list
+  - name: print file_status
+    ansible.builtin.debug:
+       var: file_list.files
+       var: item.path
+    with_items: "{{ file_list.files }}"
+  - name: delete old filess
+    ansible.builtin.file:
+       path: "{{ item.path }}"
+       state: absent
+    with_items: "{{ file_list.files }}"
+  - name: delete tomacat binary file if already exists
+    ansible.builtin.file:
+       path: "/home/ec2-user/apache-tomcat-{{ tomcat_version }}.tar.gz"
+       state: absent
+    when: file_status.stat.exists == "true"
+  - name: download latest tomcat package
+    ansible.builtin.command: wget "{{ apache_tomcat_download_url }}/v{{ tomcat_version }}/bin/apache-tomcat-{{ tomcat_version }}.tar.gz"
+  - name: extract tomcat archive file
+    ansible.builtin.unarchive:
+       src: "/home/ec2-user/apache-tomcat-{{ tomcat_version }}.tar.gz"
+       dest: "{{ tomcat_home_path }}/apache-tomcat-{{ tomcat_version }}"
+       owner: "{{ tomcat_user }}"
+       group: "{{ tomcat_group }}"
+       remote_src: yes
+  - name: create symbolic link for tomcat
+    ansible.builtin.file:
+       src: "{{ tomcat_home_path }}/apache-tomcat-{{ tomcat_version }}"
+       dest: "{{ tomcat_home_path }}/tomcat"
+       owner: "{{ tomcat_user }}"
+       group: "{{ tomcat_group }}"
+       state: link
+  - name: copy tomcat service file to systemd folder
+    ansible.builtin.copy:
+       src: "{{ tomcat_service_file }}"
+       dest: "{{ tomcat_service_path }}/{{ tomcat_service_file }}"
+  - name: restart systemd, enable tomcat service and start tomcat service
+    ansible.builtin.systemd:
+       name: "{{ tomcat_service_file }}"
+       daemon-reload: yes
+       state: started
+       enabled: yes
