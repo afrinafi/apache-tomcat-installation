@@ -1,20 +1,6 @@
 all:
  hosts:
    172.31.34.101:
-     ansible_user: ec2-user
    172.31.37.254:
    172.31.36.69:
-   172.31.28.230:
- children:
-   webservers:
-      hosts:
-       172.31.34.101:
-       172.31.37.254:
-       172.31.28.230:
-         ansible-user: ubuntu
-   appservers:
-       hosts:
-        172.31.36.69:
-   database:
-        hosts:
-         172.31.7.99:
+   
