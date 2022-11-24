@@ -1,6 +1,5 @@
 ---
 - name: install jkd11
-
   hosts: all
   become: True
   vars:
