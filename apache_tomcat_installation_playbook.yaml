@@ -69,7 +69,7 @@
   - name: extract tomcat archive file
     ansible.builtin.unarchive:
        src: "/home/ec2-user/apache-tomcat-{{ tomcat_version }}.tar.gz"
-       dest: "{{ tomcat_home_path }}/apache-tomcat-{{ tomcat_version }}"
+       dest: "{{ tomcat_home_path }}apache-tomcat-{{ tomcat_version }}"
        owner: "{{ tomcat_user }}"
        group: "{{ tomcat_group }}"
        remote_src: yes
