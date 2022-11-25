@@ -52,8 +52,8 @@
   - name: print file_status
     ansible.builtin.debug:
        var: file_list.files
-       var: item.path
-    with_items: "{{ file_list.files }}"
+       #var: item.path
+    #with_items: "{{ file_list.files }}"
   - name: delete old files
     ansible.builtin.file:
        path: "{{ item.path }}"
