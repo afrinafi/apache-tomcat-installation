@@ -60,7 +60,7 @@
        var: file_list.files
        var: item.path
     with_items: "{{ file_list.files }}"
-  - name: delete old filess
+  - name: delete old files
     ansible.builtin.file:
        path: "{{ item.path }}"
        state: absent
