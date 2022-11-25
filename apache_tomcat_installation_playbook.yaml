@@ -3,7 +3,7 @@
   hosts: all
   become: True
   vars:
-   tomcat_version: 9.0.68
+   tomcat_version: 9.0.69
    amazon_linux_java_version: java-openjdk11
    yum_java_package_name: java-11-openjdk
    tomcat_user: tomcat
