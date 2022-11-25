@@ -75,7 +75,7 @@
        remote_src: yes
   - name: create symbolic link for tomcat
     ansible.builtin.file:
-       src: "{{ tomcat_home_path }}/apache-tomcat-{{ tomcat_version }}"
+       src: "{{ tomcat_home_path }}"
        dest: "{{ tomcat_home_path }}/tomcat"
        owner: "{{ tomcat_user }}"
        group: "{{ tomcat_group }}"
