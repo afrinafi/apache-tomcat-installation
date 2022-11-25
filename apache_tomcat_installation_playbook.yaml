@@ -18,12 +18,6 @@
       name: "*"
       state: latest
     when: (ansible_facts['distribution']=="amazon")
-  - name: update latest software in the ubuntu server
-    ansible.builtin.apt:
-      name: "*"
-      state: latest
-      update_cache: yes
-    when: (ansible_facts['distribution']=="ubuntu")
   - name: pause playbook
     ansible.builtin.pause:
        prompt: "check the file_list"
